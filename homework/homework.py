@@ -302,3 +302,4 @@ with open("files/output/metrics.json", "w", encoding="utf-8") as f:
     f.write(json.dumps(test_metrics) + "\n")
     f.write(json.dumps(train_cm) + "\n")
     f.write(json.dumps(test_cm) + "\n")
+
