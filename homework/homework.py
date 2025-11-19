@@ -185,7 +185,7 @@ preprocessor = ColumnTransformer(
 pipeline = Pipeline(
     steps=[
     ('preprocessor', preprocessor),
-    ('classifier', RandomForestClassifier(random_state=42))
+    ('rf', RandomForestClassifier(random_state=42))
 ])
 
 """
@@ -197,10 +197,10 @@ balanceada para medir la precisión del modelo.
 """
 
 parameter_grid = {
-    "classifier__n_estimators": [100, 200, 500],
-    "classifier__max_depth": [None, 5, 10],
-    "classifier__min_samples_split": [2, 5],
-    "classifier__min_samples_leaf": [1, 2],
+    "rf__n_estimators": [100, 200, 500],
+    "rf__max_depth": [None, 5, 10],
+    "rf__min_samples_split": [2, 5],
+    "rf__min_samples_leaf": [1, 2],
 }
 
 grid = GridSearchCV(
