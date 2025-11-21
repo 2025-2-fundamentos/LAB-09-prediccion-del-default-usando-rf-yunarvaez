@@ -185,7 +185,7 @@ preprocessor = ColumnTransformer(
 pipeline = Pipeline(
     steps=[
     ('preprocessor', preprocessor),
-    ('rf', RandomForestClassifier(random_state=42))
+    ('clf', RandomForestClassifier(random_state=42))
 ])
 
 """
@@ -196,24 +196,34 @@ Use 10 splits para la validación cruzada. Use la función de precision
 balanceada para medir la precisión del modelo.
 """
 
-parameter_grid = {
-    "rf__n_estimators": [100, 200, 500],
-    "rf__max_depth": [None, 5, 10],
-    "rf__min_samples_split": [2, 5],
-    "rf__min_samples_leaf": [1, 2],
+param_grid = {
+    "clf__n_estimators": [100, 200, 500],
+    "clf__max_depth": [None, 5, 10],
+    "clf__min_samples_split": [2, 5],
+    "clf__min_samples_leaf": [1, 2],
 }
 
-grid = GridSearchCV(
-    estimator=pipeline,
-    param_grid=parameter_grid,
-    scoring=make_scorer(balanced_accuracy_score),
+# grid = GridSearchCV(
+#     estimator=pipeline,
+#     param_grid=parameter_grid,
+#     scoring=make_scorer(balanced_accuracy_score),
+#     cv=10,
+#     n_jobs=-1,
+#     verbose=2,
+# )
+
+grid_search = GridSearchCV(
+    pipeline,
+    param_grid,
     cv=10,
+    # scoring=make_scorer(balanced_accuracy_score),
+    scoring='balanced_accuracy',
     n_jobs=-1,
-    verbose=2,
+    verbose=2
 )
 
-grid.fit(x_train, y_train)
-
+grid_search.fit(x_train, y_train)
+    
 """
 Paso 5.
 Guarde el modelo (comprimido con gzip) como "files/models/model.pkl.gz".
@@ -224,7 +234,7 @@ Recuerde que es posible guardar el modelo comprimido usanzo la libreria gzip.
 os.makedirs("files/models", exist_ok=True)
 
 with gzip.open(os.path.join("files", "models", "model.pkl.gz"), "wb") as f:
-    pickle.dump(grid, f)
+    pickle.dump(grid_search, f)
 
 """
 Paso 6
@@ -237,8 +247,8 @@ de entrenamiento o prueba. Por ejemplo:
 """
 
 
-y_pred_train = grid.predict(x_train)
-y_pred_test = grid.predict(x_test)
+y_pred_train = grid_search.predict(x_train)
+y_pred_test = grid_search.predict(x_test)
 
 train_metrics = {
     "type": "metrics",
